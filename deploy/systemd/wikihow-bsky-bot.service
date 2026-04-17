@@ -1,0 +1,15 @@
+[Unit]
+Description=WikiHow Random Image Bluesky Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/wikihow-random-image-bluesky-bot
+EnvironmentFile=/etc/wikihow-bsky-bot.env
+ExecStart=/opt/wikihow-random-image-bluesky-bot/.venv/bin/wikihow-bsky-bot run-once
+User=wikibot
+Group=wikibot
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,61 @@
+name: Post Random WikiHow Image
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "00 12 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: self-hosted
+    env:
+      BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
+      BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+      BOT_CRON: "00 12 * * *"
+      BOT_TIMEZONE: "UTC"
+      BOT_DATABASE_PATH: ".state/bot_state.sqlite3"
+      BOT_DEDUP_WINDOW_HOURS: "168"
+      BOT_MAX_ARTICLE_ATTEMPTS: "6"
+      BOT_DRY_RUN: "false"
+      BOT_HTTP_TIMEOUT_SECONDS: "20"
+      BOT_USER_AGENT: "wikihow-random-image-bluesky-bot/0.1.0 (gha)"
+      ALT_GEN_ENABLED: "true"
+      ALT_GEN_ENDPOINT: ${{ vars.ALT_GEN_ENDPOINT }}
+      ALT_GEN_API_KEY: ${{ secrets.ALT_GEN_API_KEY }}
+      ALT_GEN_MODEL: ${{ vars.ALT_GEN_MODEL || 'gpt-5-nano' }}
+      ALT_GEN_TIMEOUT_SECONDS: "20"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Restore bot state cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .state
+          key: bot-state-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            bot-state-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Run one publish attempt
+        run: wikihow-bsky-bot run-once
+
+      - name: Save bot state cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .state
+          key: bot-state-${{ runner.os }}-${{ github.run_id }}

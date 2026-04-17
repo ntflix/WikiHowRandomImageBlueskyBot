@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wikihow-random-image-bluesky-bot"
+version = "0.1.0"
+description = "Post a random wikiHow image to Bluesky on a schedule."
+readme = "README.md"
+requires-python = ">=3.14"
+license = {text = "MIT"}
+authors = [
+  {name = "Felix"}
+]
+dependencies = [
+  "APScheduler>=3.10.4,<4",
+  "atproto==0.0.65",
+  "beautifulsoup4>=4.12.3,<5",
+  "openai>=1.75.0,<2",
+  "Pillow>=11.1.0,<12",
+  "python-dotenv>=1.0.1,<2",
+  "requests>=2.32.3,<3",
+  "whapi @ git+https://github.com/ntflix/WHAPI"
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.12.0,<2",
+  "pytest>=8.3.3,<9",
+  "pytest-cov>=6.0.0,<7",
+  "ruff>=0.7.0,<1"
+]
+
+[project.scripts]
+wikihow-bsky-bot = "wikihow_bluesky_bot.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_unused_configs = true
+exclude = ["^tests/"]
+
+[[tool.mypy.overrides]]
+module = ["atproto", "atproto.*", "atproto_client", "atproto_client.*", "whapi", "whapi.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "S", "RUF"]
+ignore = ["S603", "S607"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
