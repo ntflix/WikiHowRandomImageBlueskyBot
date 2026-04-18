@@ -218,8 +218,3 @@ def _looks_like_placeholder_src(src: str) -> bool:
         "transparent.gif",
     )
     return any(token in lowered for token in placeholder_tokens)
-
-
-def build_post_alt_text(*, wikihow_image_alt: str, article_url: str) -> str:
-    cleaned_alt = wikihow_image_alt.strip() or "Image from wikiHow"
-    return f"{cleaned_alt}\nImage from {article_url.strip()}"

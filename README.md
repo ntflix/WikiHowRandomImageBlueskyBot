@@ -7,6 +7,19 @@ Python 3.14+ bot that:
 3. Posts image-only to Bluesky (no post text).
 4. Uses alt text format: [optional generated alt] + original image name.webp + `\n` + article URL.
 
+## Modules
+
+The package has two modules:
+
+1. `wikihow_bluesky_bot.random_image_grabber`
+   - Purpose: get a random image from wikiHow.
+   - Main entry: `WikiHowRandomImageGrabber.fetch_random_image()`.
+2. `wikihow_bluesky_bot.openai_bluesky_uploader`
+   - Purpose: generate alt text with OpenAI (optional), prepare image, deduplicate, and upload to Bluesky.
+   - Main entry: `OpenAIBlueskyUploader.upload_selected_image(...)`.
+
+`WikiHowBlueskyBot` just uses these modules.
+
 ## Quick Start
 
 1. Install dependencies:

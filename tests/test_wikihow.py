@@ -1,9 +1,7 @@
 import unittest
 
-from wikihow_bluesky_bot.wikihow import (
-    build_post_alt_text,
-    extract_image_candidates_from_html,
-)
+from wikihow_bluesky_bot.openai_bluesky_uploader import build_post_alt_text
+from wikihow_bluesky_bot.wikihow import extract_image_candidates_from_html
 
 
 class WikiHowTests(unittest.TestCase):
@@ -13,7 +11,8 @@ class WikiHowTests(unittest.TestCase):
             article_url="https://www.wikihow.com/Grow-Basil",
         )
         self.assertEqual(
-            alt, "A person planting basil\nhttps://www.wikihow.com/Grow-Basil"
+            alt,
+            "A person planting basil\nImage from https://www.wikihow.com/Grow-Basil",
         )
 
     def test_build_post_alt_text_uses_fallback_when_alt_missing(self) -> None:
@@ -21,7 +20,10 @@ class WikiHowTests(unittest.TestCase):
             wikihow_image_alt="   ",
             article_url="  https://www.wikihow.com/Grow-Basil  ",
         )
-        self.assertEqual(alt, "Image from wikiHow\nhttps://www.wikihow.com/Grow-Basil")
+        self.assertEqual(
+            alt,
+            "Image from wikiHow\nImage from https://www.wikihow.com/Grow-Basil",
+        )
 
     def test_extract_image_candidates_filters_invalid_urls(self) -> None:
         html = """
