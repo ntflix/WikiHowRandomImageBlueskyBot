@@ -3,7 +3,7 @@ name: Post Random WikiHow Image
 on:
   workflow_dispatch:
   schedule:
-    - cron: "30 12 * * *"
+    - cron: "00 13 * * *"
 
 permissions:
   contents: read
@@ -14,7 +14,7 @@ jobs:
     env:
       BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
       BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
-      BOT_CRON: "30 12 * * *"
+      BOT_CRON: "00 13 * * *"
       BOT_TIMEZONE: "UTC"
       BOT_DATABASE_PATH: ".state/bot_state.sqlite3"
       BOT_DEDUP_WINDOW_HOURS: "168"
