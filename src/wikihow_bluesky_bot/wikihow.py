@@ -15,8 +15,6 @@ from whapi import get_html, random_article, return_details  # type: ignore[impor
 _BASE_URL = "https://www.wikihow.com"
 
 _ARTICLE_BODY_SELECTORS: tuple[str, ...] = (
-    "article",
-    "main",
     "div.mw-parser-output",
     "div#content_wrapper",
     "div#bodycontents",
@@ -36,6 +34,18 @@ _NON_BODY_CLASS_TOKENS: tuple[str, ...] = (
     "profile",
     "related",
     "sidebar",
+    "sprite",
+    "thumbs",
+    "toolbar",
+    "user",
+)
+
+_NON_BODY_TAG_NAMES: tuple[str, ...] = (
+    "aside",
+    "button",
+    "footer",
+    "header",
+    "nav",
 )
 
 
@@ -139,18 +149,14 @@ def _find_article_body_roots(soup: BeautifulSoup) -> list[Tag]:
     for selector in _ARTICLE_BODY_SELECTORS:
         for node in soup.select(selector):
             roots.append(node)
-
-    if roots:
-        return roots
-
-    fallback = soup.find("body")
-    if isinstance(fallback, Tag):
-        return [fallback]
-    return []
+    return roots
 
 
 def _is_non_body_image(image: Tag) -> bool:
     # Exclude utility/profile images commonly outside article content (author cards, avatars, logos).
+    if image.name in _NON_BODY_TAG_NAMES:
+        return True
+
     classes = _class_tokens(image)
     if any(
         token in class_name
@@ -159,13 +165,23 @@ def _is_non_body_image(image: Tag) -> bool:
     ):
         return True
 
+    image_id = _string_attr(image, "id").lower()
+    if any(token in image_id for token in _NON_BODY_CLASS_TOKENS):
+        return True
+
     src_value = image.get("src")
     if isinstance(src_value, str):
         src_lower = src_value.lower()
         if any(token in src_lower for token in _NON_BODY_CLASS_TOKENS):
             return True
 
+    if _is_small_utility_image(image):
+        return True
+
     for ancestor in image.parents:
+        if ancestor.name in _NON_BODY_TAG_NAMES:
+            return True
+
         ancestor_classes = _class_tokens(ancestor)
         if any(
             token in class_name
@@ -174,7 +190,34 @@ def _is_non_body_image(image: Tag) -> bool:
         ):
             return True
 
+        ancestor_id = _string_attr(ancestor, "id").lower()
+        if any(token in ancestor_id for token in _NON_BODY_CLASS_TOKENS):
+            return True
+
     return False
+
+
+def _is_small_utility_image(image: Tag) -> bool:
+    width = _parse_dimension(image.get("width"))
+    height = _parse_dimension(image.get("height"))
+
+    if width is None or height is None:
+        return False
+
+    return width <= 96 and height <= 96
+
+
+def _parse_dimension(value: object) -> int | None:
+    if isinstance(value, int):
+        return value
+    if not isinstance(value, str):
+        return None
+
+    cleaned = "".join(ch for ch in value if ch.isdigit())
+    if not cleaned:
+        return None
+
+    return int(cleaned)
 
 
 def _class_tokens(node: Tag) -> list[str]:

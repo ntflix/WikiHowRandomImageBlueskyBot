@@ -116,6 +116,48 @@ class WikiHowTests(unittest.TestCase):
             "Step 1 Find a small jar with a tight fitting lid.",
         )
 
+    def test_extract_image_candidates_ignores_images_outside_article_body(self) -> None:
+        html = """
+        <html><body>
+            <main>
+                <img src="/images/site-icon.png" alt="Site icon" />
+            </main>
+            <div class="mw-parser-output">
+                <img src="/images/article-body.jpg" alt="Article body image" />
+            </div>
+        </body></html>
+        """
+
+        candidates = extract_image_candidates_from_html(
+            html, "https://www.wikihow.com/Test"
+        )
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(
+            candidates[0].src_url, "https://www.wikihow.com/images/article-body.jpg"
+        )
+        self.assertEqual(candidates[0].alt_text, "Article body image")
+
+    def test_extract_image_candidates_ignores_small_utility_images(self) -> None:
+        html = """
+        <html><body>
+            <div class="mw-parser-output">
+                <img src="/images/step-icon.png" alt="step icon" width="32" height="32" />
+                <img src="/images/step-photo.jpg" alt="Step photo" width="728" height="546" />
+            </div>
+        </body></html>
+        """
+
+        candidates = extract_image_candidates_from_html(
+            html, "https://www.wikihow.com/Test"
+        )
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(
+            candidates[0].src_url, "https://www.wikihow.com/images/step-photo.jpg"
+        )
+        self.assertEqual(candidates[0].alt_text, "Step photo")
+
 
 if __name__ == "__main__":
     unittest.main()
