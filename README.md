@@ -168,3 +168,47 @@ If the service fails with `Read-only file system` for `.state`:
 - Your effective `BOT_DATABASE_PATH` is still relative (for example `.state/...`).
 - Set `BOT_DATABASE_PATH=/var/lib/wikihow-bsky-bot/bot_state.sqlite3` in `/etc/wikihow-bsky-bot.env`.
 - Run `sudo systemctl daemon-reload` and start the service again.
+
+## Using in Another Package
+
+```python
+from wikihow_bluesky_bot.random_image_grabber import WikiHowRandomImageGrabber
+
+def main() -> None:
+    grabber = WikiHowRandomImageGrabber(max_attempts=6)
+    selected = grabber.fetch_random_image()
+
+    print("Article:", selected.article.title)
+    print("Article URL:", selected.article.url)
+    print("Image URL:", selected.image.src_url)
+    print("Image alt:", selected.image.alt_text)
+
+if __name__ == "__main__":
+    main()
+```
+
+Or to download the image too-
+
+```python
+from pathlib import Path
+import requests
+
+from wikihow_bluesky_bot.random_image_grabber import WikiHowRandomImageGrabber
+
+def main() -> None:
+    grabber = WikiHowRandomImageGrabber(max_attempts=6)
+    selected = grabber.fetch_random_image()
+
+    image_url = selected.image.src_url
+    response = requests.get(image_url, timeout=20)
+    response.raise_for_status()
+
+    out = Path("wikihow-random-image.jpg")
+    out.write_bytes(response.content)
+
+    print("Saved:", out.resolve())
+    print("From article:", selected.article.url)
+
+if __name__ == "__main__":
+    main()
+```
