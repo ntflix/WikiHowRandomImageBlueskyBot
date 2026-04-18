@@ -3,7 +3,7 @@ name: Post Random WikiHow Image
 on:
   workflow_dispatch:
   schedule:
-    - cron: "00 12 * * *"
+    - cron: "30 12 * * *"
 
 permissions:
   contents: read
@@ -14,7 +14,7 @@ jobs:
     env:
       BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
       BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
-      BOT_CRON: "00 12 * * *"
+      BOT_CRON: "30 12 * * *"
       BOT_TIMEZONE: "UTC"
       BOT_DATABASE_PATH: ".state/bot_state.sqlite3"
       BOT_DEDUP_WINDOW_HOURS: "168"
@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: "3.14.4"
 
       - name: Restore bot state cache
         uses: actions/cache/restore@v4

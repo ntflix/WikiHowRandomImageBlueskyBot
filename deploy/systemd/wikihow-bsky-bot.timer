@@ -2,8 +2,7 @@
 Description=Run WikiHow Random Image Bluesky Bot on schedule
 
 [Timer]
-OnBootSec=2min
-OnUnitActiveSec=6h
+OnCalendar=*-*-* 13:00:00
 Persistent=true
 Unit=wikihow-bsky-bot.service
 

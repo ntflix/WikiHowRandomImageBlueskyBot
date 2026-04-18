@@ -7,9 +7,21 @@ Wants=network-online.target
 Type=oneshot
 WorkingDirectory=/opt/wikihow-random-image-bluesky-bot
 EnvironmentFile=/etc/wikihow-bsky-bot.env
+Environment=BOT_DATABASE_PATH=/var/lib/wikihow-bsky-bot/bot_state.sqlite3
 ExecStart=/opt/wikihow-random-image-bluesky-bot/.venv/bin/wikihow-bsky-bot run-once
 User=wikibot
 Group=wikibot
-
-[Install]
-WantedBy=multi-user.target
+StateDirectory=wikihow-bsky-bot
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+UMask=0077

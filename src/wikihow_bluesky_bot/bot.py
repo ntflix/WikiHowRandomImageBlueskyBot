@@ -64,7 +64,7 @@ class WikiHowBlueskyBot:
 
         generated_alt = self._safe_generate_alt(selected.image.src_url)
         if generated_alt:
-            source_alt = generated_alt
+            source_alt = generated_alt + "\n" + source_alt
 
         prepared = retry_with_backoff(
             lambda: self._image_processor.prepare_for_bluesky(selected.image.src_url),
