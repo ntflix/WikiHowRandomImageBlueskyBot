@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   post:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       BLUESKY_IDENTIFIER: ${{ secrets.BLUESKY_IDENTIFIER }}
       BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14.4"
+          python-version: "3.14"
 
       - name: Restore bot state cache
         uses: actions/cache/restore@v4
